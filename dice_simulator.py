@@ -18,6 +18,4 @@ while anothertry in OkayAnswers :
         else:
             print("\nI can't understand you")
             i = True
-
-
 print ("Bye bye...")

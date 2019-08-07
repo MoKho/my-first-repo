@@ -1,7 +1,7 @@
 # the first player inputs a word and the second player has to find it using the hints
 import re
 import msvcrt #for getch
-import time # for pause
+import time # for pauseprintprint
 import os #to clear the screen
 os.system('cls' if os.name == 'nt' else 'clear')
 TheWord = input("\nPlease input the word : ")
