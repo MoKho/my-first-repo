@@ -4,6 +4,9 @@ import string
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 mystring = string.ascii_uppercase[:27] + string.digits[2:]
 def padding5(source_string = ""):
+    '''
+        Padding the raw message so it has a product of five characters.
+    '''
     if len(source_string) % 5 == 4:
         #logging.debug(source_string + "1")
         return source_string + "1"
@@ -17,9 +20,12 @@ def padding5(source_string = ""):
         #logging.debug(source_string + "4444")
         return source_string + "4444"
     else:
-        #logging.debug("the string needs no padding")
-        return source_string
+        #logging.debug(source_string + "55555")
+        return source_string + "55555"
 def convert_to_bytes(source_string):
+    '''
+        converting the padded raw message to 8-bits bytes, glued together
+    '''
     temporary_list = list(source_string)
     #logging.debug("first temporary list :" + str(temporary_list))
     for i, character in enumerate(source_string):
@@ -47,7 +53,7 @@ def bytes_to_5bits(source_bytes):
             #logging.debug("else : " + result)
     #logging.debug(result)
     result = result.rsplit(" ")
-    #logging.debug(result)
+    #logging.debug("encoded bits are : " + str(result))
     return result
 
 def bits_to_encode32(source_bytes):
@@ -62,66 +68,59 @@ def bits_to_encode32(source_bytes):
 
 
 def encoded_to_bits(encoded_msg):
-    logging.debug("********* Now Decoding ************")
+    #logging.debug("********* Now Decoding :" + encoded_msg + "  ************")
     temporary_list = []
     for i in encoded_msg:
         a = mystring.find(i)
-        if a < 16:              #converting the 4 digits characters to 5 digits
-            temporary_list += '0' + bin(a)
-        else:
-            temporary_list += bin(a)
-        logging.debug(str(temporary_list) + str(a))
+        bits_count = len(str(bin(a))) - 2
+        #logging.debug("bits count :" + str(bits_count) + " adding : " + str(5-bits_count) + " for character : " + i)
+        temporary_list.append("0"*(5-bits_count) + str(bin(a)))
+        #logging.debug(str(temporary_list) + str(a))
     encoded_msg = "".join(temporary_list).replace("0b","")
-    logging.debug(encoded_msg)
+    #logging.debug(encoded_msg)
     return encoded_msg
 
 def fivebits_to_byte(binary_msg):
+    #logging.debug("the binary msg : " + binary_msg)
     result = ""
     for i, x in enumerate(binary_msg):
         if i == 0 :
             result = "".join(result+str(x)+"") 
-            logging.debug("if i == 0 : " + result)
+            #logging.debug("if i == 0 : " + result)
             continue
         if i % 8 == 0:
             result = "".join(result + " " + str(x))
-            logging.debug("if i%5 == 0 : " +result)
+            #logging.debug("if i%5 == 0 : " +result)
         else:
             result = "".join(result+str(x))
-            logging.debug("else : " + result)
-    logging.debug(result)
+            #logging.debug("else : " + result)
+    #logging.debug(result)
     result = result.rsplit(" ")
-    logging.debug(result)
-    return result
+    #logging.debug("the bits are : " + "".join(result))
+    return "".join(result)
 
-def binary_to_string(decoded_msg):
-    logging.debug("************ now converting to string************")
-    for i in range(len(decoded_msg)):
-        decoded_msg[i] = chr(int(decoded_msg[i],2))
-        logging.debug(decoded_msg)
-    result = "".join(decoded_msg)
-    return result
+def binary_to_string(data):
+    #logging.debug("************ now converting to string************")
+    output = []
+    for i in range(1, len(data)+1):
+        #logging.debug("the " + str(i) + " time: ")
+        if i % 8 == 0:
+            #logging.debug("now doing this byte : " + str(i) + " : " + str(int(data[i-8:i],2)) + " : " + chr(int(data[i-8:i],2)))
+            output.append(chr(int(data[i-8:i],2)))
+    #logging.debug("the result is : " + str(output))
+    output = "".join(output)
+    finaloutput = output[:(len(output)-int(output[len(output)-1]))]
+    
+    return finaloutput
 
 def encode32(the_string):
     return bits_to_encode32(bytes_to_5bits(convert_to_bytes(padding5(the_string))))
 
 def decode32(the_string):
-    binary_to_string(fivebits_to_byte(encoded_to_bits(the_string)))
-
-#print(encode32("Ng Sir three"), encode32("Sir"), encode32("blind Ng"))
-print(decode32("ONUXIIDUNBZGKZJAMR2WK3DMNFXGOIDTNF2CAZDVMVWGY2LOM42DINBU"))
-#print(decode32("ONUXIIDUNBZGKZJAONUXIMRS"))
-#print(decode32("MJWGS3TEGU2TKNJV"))
-
-
-    
-    
-
-    
-    
+    return binary_to_string(fivebits_to_byte(encoded_to_bits(the_string)))
 
 
 
-    
-
-
-
+print(encode32("Ng Sir three"), decode32("ONUXIIDUNBZGKZJAMR2WK3DMNFXGOIDTNF2CAZDVMVWGY2LOM42DINBU"), end = " ")
+print(encode32("Sir"), decode32("ONUXIIDUNBZGKZJAONUXIMRS"), end = " ")
+print(encode32("blind Ng"), decode32("MJWGS3TEGU2TKNJV"))
