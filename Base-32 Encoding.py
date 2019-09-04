@@ -80,25 +80,6 @@ def encoded_to_bits(encoded_msg):
     #logging.debug(encoded_msg)
     return encoded_msg
 
-def fivebits_to_byte(binary_msg):
-    #logging.debug("the binary msg : " + binary_msg)
-    result = ""
-    for i, x in enumerate(binary_msg):
-        if i == 0 :
-            result = "".join(result+str(x)+"") 
-            #logging.debug("if i == 0 : " + result)
-            continue
-        if i % 8 == 0:
-            result = "".join(result + " " + str(x))
-            #logging.debug("if i%5 == 0 : " +result)
-        else:
-            result = "".join(result+str(x))
-            #logging.debug("else : " + result)
-    #logging.debug(result)
-    result = result.rsplit(" ")
-    #logging.debug("the bits are : " + "".join(result))
-    return "".join(result)
-
 def binary_to_string(data):
     #logging.debug("************ now converting to string************")
     output = []
@@ -117,10 +98,13 @@ def encode32(the_string):
     return bits_to_encode32(bytes_to_5bits(convert_to_bytes(padding5(the_string))))
 
 def decode32(the_string):
-    return binary_to_string(fivebits_to_byte(encoded_to_bits(the_string)))
-
-
-
-print(encode32("Ng Sir three"), decode32("ONUXIIDUNBZGKZJAMR2WK3DMNFXGOIDTNF2CAZDVMVWGY2LOM42DINBU"), end = " ")
-print(encode32("Sir"), decode32("ONUXIIDUNBZGKZJAONUXIMRS"), end = " ")
-print(encode32("blind Ng"), decode32("MJWGS3TEGU2TKNJV"))
+    return binary_to_string(encoded_to_bits(the_string))
+print("\n\n\n")
+with open("test_data.txt", "r") as test_data:
+    lines = int(test_data.readline())
+    for i,x in enumerate(test_data.readlines()):
+        if i % 2 == 0:
+            print(encode32(x[:len(x)-1]), end=" ")
+        else:
+            print(decode32(x[:len(x)-1]), end=" ")
+print("\n\n\n")
